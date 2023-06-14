@@ -2,6 +2,7 @@
 {
 
     using System;
+    using System.Text;
     using McMaster.Extensions.CommandLineUtils;
 
     public class Program
@@ -14,9 +15,15 @@
         [Option(Description = "The name of the file you would like to create", ShortName = "n", LongName = "name")]
         public string Date { get; } = currentDate.ToString("MM-dd-yyyy");
 
+        [Option(Description = "A list of things you would like to do. Seperate each item using a comma (,)", ShortName = "t", LongName = "todos")]
+        public string TodosInput { get; } = "";
+
         private void OnExecute()
         {
             string fileName = $"{Date}.md";
+            StringBuilder formattedTodos = new StringBuilder();
+
+            List<string> Todos = TodosInput.Split(",").ToList();
 
             try
             {
@@ -26,6 +33,21 @@
                     return;
                 }
 
+
+                if (Todos.Count != 0)
+                {
+
+                    foreach (string todo in Todos)
+                    {
+                        formattedTodos.Append($"- [ ] {todo.Trim()} \n");
+                    }
+                }
+                else
+                {
+                    formattedTodos.Append("- [ ] ");
+                }
+
+
                 using StreamWriter sw = File.AppendText(fileName);
                 sw.Write(
                 $"""
@@ -33,11 +55,10 @@
 
                 ## Todo
 
-                - [ ] 
-                - [ ] 
+                {formattedTodos}
 
                 ## Done
-                - [ ] 
+                
                 - [ ] 
 
                 """
